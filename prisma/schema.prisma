@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "sqlite"
+  provider     = "mysql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -51,7 +51,7 @@ model Route {
   startLocation String
   endLocation   String
   pickupTime    Int
-  startDate     DateTime   
+  startDate     DateTime     @db.Date()
   cabRequests   CabRequest[]
   expireDate    DateTime
 
