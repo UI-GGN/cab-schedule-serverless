@@ -1,4 +1,4 @@
-Install the Vercel CLI:
+Install the Vercel CLI :
 
 ```bash
 npm i -g vercel
