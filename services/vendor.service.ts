@@ -1,4 +1,3 @@
-import { CabRequest } from "@prisma/client";
 import prisma from "../lib/prisma";
 
 export type CreateVendor = {
@@ -13,7 +12,8 @@ export type CreateVendor = {
 
 export type UpdateVendor = {
   id: number;
-  name: string;
+  name?: string;
+  phoneNumber?: string;
 };
 
 export const getVendors = async () => {
@@ -46,13 +46,14 @@ export const createVendor = async ({
   return result;
 };
 
-export const updateVendor = async ({ id, name }: UpdateVendor) => {
+export const updateVendor = async ({ id, name, phoneNumber }: UpdateVendor) => {
   const result = await prisma.vendor.update({
     where: {
       id,
     },
     data: {
       name,
+      phoneNumber,
     },
   });
   return result;

@@ -20,6 +20,7 @@ const updateVendorController = async (
   const result = await updateVendor({
     id: parseInt(id as string),
     name: body.name,
+    phoneNumber: body.phoneNumber,
   });
   res.status(200).json(result);
 };
