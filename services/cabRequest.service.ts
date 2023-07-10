@@ -1,4 +1,7 @@
+import { CabRequest, Vendor } from "@prisma/client";
 import prisma from "../lib/prisma";
+import { notifyVendor } from "../lib/snsClient";
+import { sendEmailNotification } from "../lib/sesClient";
 
 export type CreateCabRequest = {
   employeeId: string;
@@ -55,6 +58,27 @@ export const createCabRequest = async ({
     },
   });
 
+  if (result) {
+    try {
+      await sendEmailNotification(
+        {
+          employeeName,
+          phoneNumber,
+          pickupLocation,
+          dropLocation,
+          pickupTime,
+        },
+        process.env.ADMIN_ADDRESSES,
+        {
+          SourceArn: process.env.EMAIL_SOURCE_ARN,
+          Source: process.env.EMAIL_SOURCE,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return result;
 };
 
@@ -84,6 +108,33 @@ export const updateCabRequest = async ({
       vendorId,
     },
   });
+  if (result) {
+    const vendor = await prisma.vendor.findFirst({
+      where: {
+        id: vendorId,
+      },
+    });
+    const employee: CabRequest = await prisma.cabRequest.findFirstOrThrow({
+      where: {
+        id,
+      },
+    });
+    const {
+      employeeName,
+      pickupLocation,
+      dropLocation,
+      pickupTime,
+      phoneNumber,
+    } = employee;
+
+    await notifyVendor(vendor?.phoneNumber, {
+      employeeName,
+      pickupLocation,
+      dropLocation,
+      pickupTime,
+      phoneNumber,
+    });
+  }
   return result;
 };
 
