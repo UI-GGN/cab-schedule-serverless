@@ -114,6 +114,7 @@ export const updateCabRequest = async ({
         id: vendorId,
       },
     });
+
     const employee: CabRequest = await prisma.cabRequest.findFirstOrThrow({
       where: {
         id,

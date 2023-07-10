@@ -9,9 +9,21 @@ const sesClient = new SESClient({
 });
 
 export const sendEmailNotification = async (
-  { employeeName, pickupLocation, dropLocation, pickupTime, phoneNumber },
-  adminAddresses,
-  source
+  {
+    employeeName,
+    pickupLocation,
+    dropLocation,
+    pickupTime,
+    phoneNumber,
+  }: {
+    employeeName: string;
+    phoneNumber: string;
+    pickupLocation: string;
+    dropLocation: string;
+    pickupTime: string;
+  },
+  adminAddresses: string,
+  source: { SourceArn: any; Source: any }
 ) => {
   await sesClient.send(
     new SendEmailCommand({
@@ -33,7 +45,8 @@ export const sendEmailNotification = async (
           },
         },
       },
-      ...source,
+      Source: source.Source,
+      SourceArn: source.SourceArn,
     })
   );
 };
