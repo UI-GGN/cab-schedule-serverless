@@ -25,6 +25,7 @@ export const sendEmailNotification = async (
   adminAddresses: string,
   source: { SourceArn: any; Source: any }
 ) => {
+  console.log(source);
   try {
     const d = await sesClient.send(
       new SendEmailCommand({
@@ -47,7 +48,7 @@ export const sendEmailNotification = async (
           },
         },
         Source: source.Source,
-        SourceArn: source.SourceArn,
+        ReplyToAddresses: [source.Source],
       })
     );
     console.log(d);
