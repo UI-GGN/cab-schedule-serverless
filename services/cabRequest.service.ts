@@ -68,10 +68,10 @@ export const createCabRequest = async ({
           dropLocation,
           pickupTime,
         },
-        process.env.ADMIN_ADDRESSES,
+        process.env.ADMIN_ADDRESSES || "",
         {
-          SourceArn: process.env.EMAIL_SOURCE_ARN,
-          Source: process.env.EMAIL_SOURCE,
+          SourceArn: `${process.env.EMAIL_SOURCE_ARN}`,
+          Source: `${process.env.EMAIL_SOURCE}`,
         }
       );
     } catch (error) {
