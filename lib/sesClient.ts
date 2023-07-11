@@ -39,6 +39,9 @@ export const sendEmailNotification = async (
               Data: `<p> Hi, <b> ${employeeName}</b> needs a cab.<br/> 
               <span >Pickup Location: </span><b> ${pickupLocation}</b><br/> 
               <span >Drop Location: </span><b> ${dropLocation}</b> <br/> 
+              <span >Pickup Date: </span> <b> ${new Date(
+                pickupTime
+              ).toDateString()} </b><br/> 
                <span >Pickup Time: </span> <b> ${new Date(
                  pickupTime
                ).toLocaleTimeString()} </b><br/> 
