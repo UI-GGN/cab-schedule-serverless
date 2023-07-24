@@ -4,19 +4,23 @@ import {
   SubscribeCommand,
   ListSubscriptionsByTopicCommand,
 } from "@aws-sdk/client-sns";
+import { getIAMCreds } from "./stsClient";
 
-const snsClient = new SNSClient({
-  region: "eu-central-1",
 
-  credentials: {
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  },
-});
 
 export const notifyVendor = async (phoneNumber, employeeDetailsForVendor) => {
+
   try {
+    const creds = await getIAMCreds();
+    const snsClient = new SNSClient({
+      region: process.env.REGION,
+    
+      credentials: {
+        secretAccessKey: creds?.SecretAccessKey || "",
+        accessKeyId: creds?.AccessKeyId || "",
+        sessionToken: creds?.SessionToken || ""
+      },
+    });  
     const { Subscriptions } = await snsClient.send(
       new ListSubscriptionsByTopicCommand({
         TopicArn: process.env.TOPIC_ARN,
@@ -41,7 +45,10 @@ export const notifyVendor = async (phoneNumber, employeeDetailsForVendor) => {
           employeeDetailsForVendor.employeeName
         } needs a cab from ${employeeDetailsForVendor.pickupLocation} to ${
           employeeDetailsForVendor.dropLocation
-        } at ${new Date(employeeDetailsForVendor.pickupTime).toTimeString()}. 
+        } on ${new Date(
+          employeeDetailsForVendor.pickupTime
+        ).toDateString()} at ${new Date(employeeDetailsForVendor.pickupTime).toLocaleTimeString()}. 
+        
         Employee contact info: ${employeeDetailsForVendor.phoneNumber}`,
         PhoneNumber: phoneNumber,
       })

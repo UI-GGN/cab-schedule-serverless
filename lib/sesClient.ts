@@ -1,12 +1,5 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-const sesClient = new SESClient({
-  region: process.env.REGION,
-  credentials: {
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  },
-});
+import { getIAMCreds } from "./stsClient";
 
 export const sendEmailNotification = async (
   {
@@ -25,8 +18,18 @@ export const sendEmailNotification = async (
   adminAddresses: string,
   source: { SourceArn: any; Source: any }
 ) => {
-  console.log(source);
   try {
+ const creds = await getIAMCreds();
+    const sesClient = new SESClient({
+      region: process.env.REGION,
+    
+      credentials: {
+        secretAccessKey: creds?.SecretAccessKey || "",
+        accessKeyId: creds?.AccessKeyId || "",
+        sessionToken: creds?.SessionToken || ""
+      },
+    }); 
+    
     const d = await sesClient.send(
       new SendEmailCommand({
         Destination: { ToAddresses: [adminAddresses] },
